@@ -22,5 +22,33 @@ public class GitSubGraph {
 	public Set<Commit> getCommits() {
 		return commits;
 	}
+
+	public Commit getCommit(CommitID id) {
+		for (Commit c : commits) {
+			if (c.getId().equals(id)) {
+				return c;
+			}
+		}
+		throw new NoSuchCommitException(id);
+	}
+
+	public Set<CommitID> getChildrenCommitIDs(CommitID id) {
+		Set<CommitID> result = new HashSet<CommitID>();
+		for (Commit c : commits) {
+			if (c.getParents().contains(id)) {
+				result.add(c.getId());
+			}
+		}
+		return result;
+	}
+
+	public boolean hasCommit(CommitID id) {
+		for (Commit c : commits) {
+			if (c.getId().equals(id)) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 }

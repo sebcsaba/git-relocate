@@ -52,5 +52,17 @@ public class GraphBuilderTest {
 		Assert.assertEquals(GR1_TAGS.length, result.getTags().size());
 		Assert.assertEquals(GR1_PARENTS.length, result.getCommits().size());
 	}
+	
+	@Test
+	public void testGraphSubtree() {
+		GitRunner git = new MockedGitRunner(GR1_BRANCHES, GR1_TAGS, GR1_PARENTS);
+		GraphBuilder builder = new GraphBuilder(git);
+		GitSubGraph source = builder.buildFullTree();
+		GitSubGraph result = builder.getSubTree(source, MockedGitRunner.intToCommitID(2));
+		Assert.assertNotNull(result);
+		Assert.assertEquals(6, result.getCommits().size());
+		Assert.assertEquals(2, result.getBranches().size());
+		Assert.assertEquals(1, result.getTags().size());
+	}
 
 }

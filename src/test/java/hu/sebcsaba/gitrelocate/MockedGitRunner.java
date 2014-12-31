@@ -60,7 +60,7 @@ public class MockedGitRunner implements GitRunner {
 		}
 	}
 
-	private CommitID intToCommitID(int cid) {
+	public static CommitID intToCommitID(int cid) {
 		String cids = Integer.toString(cid);
 		return new CommitID(ZERO.substring(0, ZERO.length()-cids.length()) + cids);
 	}
