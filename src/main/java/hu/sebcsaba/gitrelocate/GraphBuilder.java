@@ -12,7 +12,7 @@ public class GraphBuilder {
 		this.git = git;
 	}
 
-	public GitSubGraph build() {
+	public GitSubGraph buildFullTree() {
 		GitSubGraph result = new GitSubGraph();
 		fillBranchesMap(result);
 		fillTagsMap(result);
