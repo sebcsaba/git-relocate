@@ -11,9 +11,9 @@ public class GraphTestData {
 	 * |/
 	 * 2
 	 * |
-	 * 1=T1
-	 * |
-	 * 0
+	 * 1=T1     8=T2
+	 * |       /
+	 * 0------/
 	 */
 	protected static final int[][] GR1_PARENTS = new int[][]{
 				new int[]{},
@@ -24,8 +24,9 @@ public class GraphTestData {
 				new int[]{3},
 				new int[]{4},
 				new int[]{5,6},
+				new int[]{0},
 		};
 	protected static final int[] GR1_BRANCHES = new int[]{7,6};
-	protected static final int[] GR1_TAGS = new int[]{4,1};
+	protected static final int[] GR1_TAGS = new int[]{4,1,8};
 
 }
