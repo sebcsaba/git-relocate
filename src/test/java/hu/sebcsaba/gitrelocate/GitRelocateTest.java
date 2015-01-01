@@ -19,6 +19,26 @@ public class GitRelocateTest extends GraphTestData {
 		
 	}
 
+	@Test
+	public void testRelocate() {
+		// given
+		GitRunner git = new MockedGitRunner(GR1_BRANCHES, GR1_TAGS, GR1_PARENTS);
+		GraphBuilder builder = new GraphBuilder(git);
+		GitRelocate relocator = new GitRelocate(git, builder);
+		
+		// when
+		CommitID cutPoint = MockedGitRunner.intToCommitID(1);
+		CommitID newBase = MockedGitRunner.intToCommitID(8);
+		relocator.relocate(cutPoint,newBase);
+		
+		// then
+		GitSubGraph result = builder.buildFullTree();
+		Assert.assertEquals(11, result.getCommits().size());
+		Assert.assertTrue(hasAncestor(result, "B0", "T2"));
+		Assert.assertTrue(hasAncestor(result, "B1", "T2"));
+		Assert.assertFalse(hasAncestor(result, "T0", "T2"));
+	}
+
 	private boolean hasAncestor(GitSubGraph tree, String commit1, String commit2) {
 		MockedGitRunner git = new MockedGitRunner(tree);
 		CommitID commit1id = git.getCommitId(commit1);
