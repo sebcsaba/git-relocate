@@ -1,6 +1,7 @@
 package hu.sebcsaba.gitrelocate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -81,6 +82,23 @@ public class MockedGitRunner implements GitRunner {
 	
 	public void removeTag(String tagName) {
 		graph.getTags().remove(tagName);
+	}
+
+	public CommitID cherryPick(CommitID commitId) {
+		CommitID newId = intToCommitID(graph.getCommits().size());
+		List<CommitID> parents = Arrays.asList(getCommitId(head));
+		Commit c = new Commit(newId, parents);
+		graph.getCommits().add(c);
+		if (isDetachedHead()) {
+			head = newId.toString();
+		} else {
+			graph.getBranches().put(head, newId);
+		}
+		return newId;
+	}
+	
+	private boolean isDetachedHead() {
+		return !graph.getBranches().containsKey(head);
 	}
 
 }

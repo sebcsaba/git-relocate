@@ -25,4 +25,6 @@ public interface GitRunner {
 
 	public void removeTag(String tagName);
 
+	public CommitID cherryPick(CommitID commitId);
+
 }

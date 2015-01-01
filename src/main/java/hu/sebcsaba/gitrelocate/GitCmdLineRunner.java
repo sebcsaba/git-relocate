@@ -59,6 +59,11 @@ public class GitCmdLineRunner implements GitRunner {
 		gitExec("tag", "-D", tagName);
 	}
 
+	public CommitID cherryPick(CommitID commitId) {
+		gitExec("cherry-pick", commitId.toString());
+		return getCommitId("HEAD");
+	}
+
 	private void gitExec(String... params) {
 		try {
 			cmdLine.run(unshift("git", params));
