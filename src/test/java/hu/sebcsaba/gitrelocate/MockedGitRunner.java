@@ -117,4 +117,17 @@ public class MockedGitRunner implements GitRunner {
 		return !graph.getBranches().containsKey(head);
 	}
 
+	public Set<CommitID> getAllAncestors(CommitID commitId) {
+		Set<CommitID> result = new HashSet<CommitID>();
+		Queue<CommitID> commits = new LinkedList<CommitID>();
+		commits.add(commitId);
+		while (!commits.isEmpty()) {
+			CommitID id = commits.poll();
+			Commit c = graph.getCommit(id);
+			commits.addAll(c.getParents());
+			result.add(id);
+		}
+		return result ;
+	}
+
 }
