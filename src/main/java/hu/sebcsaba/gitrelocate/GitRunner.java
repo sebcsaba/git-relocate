@@ -13,4 +13,16 @@ public interface GitRunner {
 
 	public Collection<String> getBranchNames();
 
+	public String getActualHeadName();
+	
+	public void createBranch(String branchName, CommitID commitId);
+
+	public void removeBranch(String branchName);
+
+	public void checkOut(String branchName);
+
+	public void createTag(String tagName, CommitID commitId);
+
+	public void removeTag(String tagName);
+
 }

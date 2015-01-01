@@ -31,6 +31,43 @@ public class GitCmdLineRunner implements GitRunner {
 		return result;
 	}
 	
+	public String getActualHeadName() {
+		String head = gitString("rev-parse", "--abbrev-ref", "HEAD");
+		if ("HEAD".equals(head)) {
+			head = gitString("rev-parse", "HEAD");
+		}
+		return head;
+	}
+
+	public void createBranch(String branchName, CommitID commitId) {
+		gitExec("branch", branchName, commitId.toString());
+	}
+
+	public void removeBranch(String branchName) {
+		gitExec("branch", "-D", branchName);
+	}
+
+	public void checkOut(String branchName) {
+		gitExec("checkout", branchName);
+	}
+
+	public void createTag(String tagName, CommitID commitId) {
+		gitExec("tag", tagName, commitId.toString());
+	}
+
+	public void removeTag(String tagName) {
+		gitExec("tag", "-D", tagName);
+	}
+
+	private void gitExec(String... params) {
+		try {
+			cmdLine.run(unshift("git", params));
+		}
+		catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+	
 	private String gitString(String... params) {
 		try {
 			return cmdLine.getString(unshift("git", params));

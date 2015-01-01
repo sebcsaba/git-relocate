@@ -9,6 +9,7 @@ public class MockedGitRunner implements GitRunner {
 	private static final String ZERO = "0000000000000000000000000000000000000000";
 	
 	private final GitSubGraph graph;
+	private String head;
 	
 	public MockedGitRunner(int[] branches, int[] tags, int[][] parents) {
 		this.graph = new GitSubGraph();
@@ -25,6 +26,9 @@ public class MockedGitRunner implements GitRunner {
 			}
 			Commit c = new Commit(intToCommitID(i), parentIDs);
 			this.graph.getCommits().add(c );
+		}
+		if (branches.length>0) {
+			head = "B0";
 		}
 	}
 
@@ -54,5 +58,29 @@ public class MockedGitRunner implements GitRunner {
 		String cids = Integer.toString(cid);
 		return new CommitID(ZERO.substring(0, ZERO.length()-cids.length()) + cids);
 	}
+
+	public String getActualHeadName() {
+		return head;
+	}
 	
+	public void createBranch(String branchName, CommitID commitId) {
+		graph.getBranches().put(branchName, commitId);
+	}
+	
+	public void removeBranch(String branchName) {
+		graph.getBranches().remove(branchName);
+	}
+
+	public void checkOut(String branchName) {
+		head = branchName;
+	}
+
+	public void createTag(String tagName, CommitID commitId) {
+		graph.getTags().put(tagName, commitId);
+	}
+	
+	public void removeTag(String tagName) {
+		graph.getTags().remove(tagName);
+	}
+
 }
