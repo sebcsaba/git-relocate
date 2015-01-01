@@ -3,7 +3,11 @@ package hu.sebcsaba.gitrelocate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+import java.util.Set;
 
 public class MockedGitRunner implements GitRunner {
 	
@@ -12,13 +16,27 @@ public class MockedGitRunner implements GitRunner {
 	private final GitSubGraph graph;
 	private String head;
 	
+	public MockedGitRunner(GitSubGraph graph) {
+		this.graph = graph;
+		if (!this.graph.getBranches().isEmpty()) {
+			head = this.graph.getBranches().keySet().iterator().next();
+		}
+	}
+
 	public MockedGitRunner(int[] branches, int[] tags, int[][] parents) {
-		this.graph = new GitSubGraph();
+		this.graph = buildGraph(branches, tags, parents);
+		if (branches.length>0) {
+			head = "B0";
+		}
+	}
+
+	private static GitSubGraph buildGraph(int[] branches, int[] tags, int[][] parents) {
+		GitSubGraph graph = new GitSubGraph();
 		for (int i=0; i<branches.length; ++i) {
-			this.graph.getBranches().put("B"+i, intToCommitID(branches[i]));
+			graph.getBranches().put("B"+i, intToCommitID(branches[i]));
 		}
 		for (int i=0; i<tags.length; ++i) {
-			this.graph.getTags().put("T"+i, intToCommitID(tags[i]));
+			graph.getTags().put("T"+i, intToCommitID(tags[i]));
 		}
 		for (int i=0; i<parents.length; ++i) {
 			List<CommitID> parentIDs = new ArrayList<CommitID>();
@@ -26,11 +44,9 @@ public class MockedGitRunner implements GitRunner {
 				parentIDs.add(intToCommitID(parents[i][j]));
 			}
 			Commit c = new Commit(intToCommitID(i), parentIDs);
-			this.graph.getCommits().add(c );
+			graph.getCommits().add(c);
 		}
-		if (branches.length>0) {
-			head = "B0";
-		}
+		return graph;
 	}
 
 	public CommitID getCommitId(String anyGitCommitRef) {
