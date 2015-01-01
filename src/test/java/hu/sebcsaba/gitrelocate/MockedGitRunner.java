@@ -8,57 +8,46 @@ public class MockedGitRunner implements GitRunner {
 	
 	private static final String ZERO = "0000000000000000000000000000000000000000";
 	
-	private final int[] branches;
-	private final int[] tags;
-	private final int[][] parents;
+	private final GitSubGraph graph;
 	
 	public MockedGitRunner(int[] branches, int[] tags, int[][] parents) {
-		this.branches = branches;
-		this.tags = tags;
-		this.parents = parents;
+		this.graph = new GitSubGraph();
+		for (int i=0; i<branches.length; ++i) {
+			this.graph.getBranches().put("B"+i, intToCommitID(branches[i]));
+		}
+		for (int i=0; i<tags.length; ++i) {
+			this.graph.getTags().put("T"+i, intToCommitID(tags[i]));
+		}
+		for (int i=0; i<parents.length; ++i) {
+			List<CommitID> parentIDs = new ArrayList<CommitID>();
+			for (int j=0; j<parents[i].length; ++j) {
+				parentIDs.add(intToCommitID(parents[i][j]));
+			}
+			Commit c = new Commit(intToCommitID(i), parentIDs);
+			this.graph.getCommits().add(c );
+		}
 	}
 
 	public CommitID getCommitId(String anyGitCommitRef) {
-		int cid = resolve(anyGitCommitRef);
-		return intToCommitID(cid);
+		if (graph.getBranches().containsKey(anyGitCommitRef)) {
+			return graph.getBranches().get(anyGitCommitRef);
+		} else if (graph.getTags().containsKey(anyGitCommitRef)) {
+			return graph.getTags().get(anyGitCommitRef);
+		} else {
+			throw new IllegalArgumentException("Unable to parse commit id for "+anyGitCommitRef);
+		}
 	}
 
 	public List<CommitID> getCommitParentIds(CommitID commitId) {
-		int cid = Integer.parseInt(commitId.toString());
-		int[] pcids = parents[cid];
-		List<CommitID> result = new ArrayList<CommitID>(pcids.length);
-		for (int pcid : pcids) {
-			result.add(intToCommitID(pcid));
-		}
-		return result;
+		return graph.getCommit(commitId).getParents();
 	}
 
 	public Collection<String> getTagNames() {
-		return toNamesList("T",tags.length);
+		return new ArrayList<String>(this.graph.getTags().keySet());
 	}
 
 	public Collection<String> getBranchNames() {
-		return toNamesList("B", branches.length);
-	}
-
-	private List<String> toNamesList(String prefix, int length) {
-		List<String> result = new ArrayList<String>(length);
-		for (int i=0; i<length; ++i) {
-			result.add(prefix+i);
-		}
-		return result;
-	}
-	
-	private int resolve(String id) {
-		if (id.matches("^B\\d+$")) {
-			int key = Integer.parseInt(id.substring(1));
-			return branches[key];
-		} else if (id.matches("^T\\d+$")) {
-			int key = Integer.parseInt(id.substring(1));
-			return tags[key];
-		} else {
-			throw new IllegalArgumentException("Unable to parse commit id for "+id);
-		}
+		return new ArrayList<String>(this.graph.getBranches().keySet());
 	}
 
 	public static CommitID intToCommitID(int cid) {
