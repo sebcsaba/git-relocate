@@ -19,6 +19,8 @@ public interface GitRunner {
 
 	public void removeBranch(String branchName);
 
+	public void moveBranch(String branchName, CommitID commitId);
+
 	public void checkOut(String branchName);
 
 	public void createTag(String tagName, CommitID commitId);

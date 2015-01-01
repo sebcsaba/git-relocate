@@ -47,6 +47,13 @@ public class GitCmdLineRunner implements GitRunner {
 		gitExec("branch", "-D", branchName);
 	}
 
+	public void moveBranch(String branchName, CommitID commitId) {
+		String head = getActualHeadName();
+		checkOut(branchName);
+		gitExec("reset", "--hard", commitId.toString());
+		checkOut(head);
+	}
+
 	public void checkOut(String branchName) {
 		gitExec("checkout", branchName);
 	}

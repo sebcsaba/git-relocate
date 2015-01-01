@@ -90,6 +90,10 @@ public class MockedGitRunner implements GitRunner {
 		graph.getBranches().remove(branchName);
 	}
 
+	public void moveBranch(String branchName, CommitID commitId) {
+		graph.getBranches().put(branchName, commitId);
+	}
+
 	public void checkOut(String branchName) {
 		head = branchName;
 	}
