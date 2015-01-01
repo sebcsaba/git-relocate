@@ -54,6 +54,8 @@ public class MockedGitRunner implements GitRunner {
 			return graph.getBranches().get(anyGitCommitRef);
 		} else if (graph.getTags().containsKey(anyGitCommitRef)) {
 			return graph.getTags().get(anyGitCommitRef);
+		} else if (anyGitCommitRef.matches("\\w{40}")) {
+			return new CommitID(anyGitCommitRef);
 		} else {
 			throw new IllegalArgumentException("Unable to parse commit id for "+anyGitCommitRef);
 		}
