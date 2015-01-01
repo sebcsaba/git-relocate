@@ -1,6 +1,7 @@
 package hu.sebcsaba.gitrelocate;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class MockedGitRunner implements GitRunner {
@@ -32,11 +33,11 @@ public class MockedGitRunner implements GitRunner {
 		return result;
 	}
 
-	public List<String> getTagNames() {
+	public Collection<String> getTagNames() {
 		return toNamesList("T",tags.length);
 	}
 
-	public List<String> getBranchNames() {
+	public Collection<String> getBranchNames() {
 		return toNamesList("B", branches.length);
 	}
 

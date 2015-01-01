@@ -1,5 +1,6 @@
 package hu.sebcsaba.gitrelocate;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface GitRunner {
@@ -8,8 +9,8 @@ public interface GitRunner {
 
 	public List<CommitID> getCommitParentIds(CommitID commitId);
 
-	public List<String> getTagNames();
+	public Collection<String> getTagNames();
 
-	public List<String> getBranchNames();
+	public Collection<String> getBranchNames();
 
 }

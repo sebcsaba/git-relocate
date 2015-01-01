@@ -2,6 +2,7 @@ package hu.sebcsaba.gitrelocate;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class GitCmdLineRunner implements GitRunner {
@@ -20,11 +21,11 @@ public class GitCmdLineRunner implements GitRunner {
 		return getCommitIDList(gitStringList("log", "--pretty=%P", "-n", "1", commitId.toString()));
 	}
 	
-	public List<String> getTagNames() {
+	public Collection<String> getTagNames() {
 		return gitStringList("tag");
 	}
 	
-	public List<String> getBranchNames() {
+	public Collection<String> getBranchNames() {
 		List<String> result = gitStringList("branch");
 		result.remove("*");
 		return result;
