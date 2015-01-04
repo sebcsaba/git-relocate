@@ -1,5 +1,6 @@
 package hu.sebcsaba.gitrelocate;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -9,9 +10,23 @@ import org.apache.commons.io.IOUtils;
 
 public class CmdLineTool {
 	
+	private final File baseDirectory;
+	
+	public CmdLineTool() {
+		this.baseDirectory = null;
+	}
+
+	public CmdLineTool(File baseDirectory) {
+		this.baseDirectory = baseDirectory;
+	}
+
 	private InputStream exec(String... params) throws IOException {
 		try {
-			Process proc = Runtime.getRuntime().exec(params);
+			ProcessBuilder pb = new ProcessBuilder(params);
+			if (baseDirectory != null) {
+				pb.directory(baseDirectory);
+			}
+			Process proc = pb.start();
 			proc.waitFor();
 			String errorString = IOUtils.toString(proc.getErrorStream(), "UTF-8");
 			if (proc.exitValue() != 0 || errorString.length()>0) {

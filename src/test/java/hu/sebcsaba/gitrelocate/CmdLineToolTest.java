@@ -1,5 +1,6 @@
 package hu.sebcsaba.gitrelocate;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -37,6 +38,20 @@ public class CmdLineToolTest {
 		Assert.assertEquals(2, result.size());
 		Assert.assertEquals("hello", result.get(0));
 		Assert.assertEquals("world", result.get(1));
+	}
+	
+	@Test
+	public void testUseCurrentDirectory() throws IOException {
+		CmdLineTool tool = new CmdLineTool();
+		String result = tool.getString("pwd").trim();
+		Assert.assertEquals(System.getProperty("user.dir"), result);
+	}
+	
+	@Test
+	public void testSetCurrentDirectory() throws IOException {
+		CmdLineTool tool = new CmdLineTool(new File("/tmp/"));
+		String result = tool.getString("pwd").trim();
+		Assert.assertEquals("/tmp", result);
 	}
 	
 }
