@@ -39,6 +39,10 @@ public class GitCmdLineRunner implements GitRunner {
 		return head;
 	}
 
+	public void createBranch(String branchName) {
+		gitExec("branch", branchName);
+	}
+
 	public void createBranch(String branchName, CommitID commitId) {
 		gitExec("branch", branchName, commitId.toString());
 	}
@@ -56,6 +60,10 @@ public class GitCmdLineRunner implements GitRunner {
 
 	public void checkOut(String branchName) {
 		gitExec("checkout", branchName);
+	}
+
+	public void createTag(String tagName) {
+		gitExec("tag", tagName);
 	}
 
 	public void createTag(String tagName, CommitID commitId) {

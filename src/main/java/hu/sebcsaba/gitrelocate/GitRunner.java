@@ -15,6 +15,8 @@ public interface GitRunner {
 
 	public String getActualHeadName();
 	
+	public void createBranch(String branchName);
+	
 	public void createBranch(String branchName, CommitID commitId);
 
 	public void removeBranch(String branchName);
@@ -22,6 +24,8 @@ public interface GitRunner {
 	public void moveBranch(String branchName, CommitID commitId);
 
 	public void checkOut(String branchName);
+
+	public void createTag(String tagName);
 
 	public void createTag(String tagName, CommitID commitId);
 

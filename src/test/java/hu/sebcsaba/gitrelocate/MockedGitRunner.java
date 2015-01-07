@@ -82,6 +82,10 @@ public class MockedGitRunner implements GitRunner {
 		return head;
 	}
 	
+	public void createBranch(String branchName) {
+		graph.getBranches().put(branchName, getCommitId(head));
+	}
+	
 	public void createBranch(String branchName, CommitID commitId) {
 		graph.getBranches().put(branchName, commitId);
 	}
@@ -98,6 +102,10 @@ public class MockedGitRunner implements GitRunner {
 		head = branchName;
 	}
 
+	public void createTag(String tagName) {
+		graph.getTags().put(tagName, getCommitId(head));
+	}
+	
 	public void createTag(String tagName, CommitID commitId) {
 		graph.getTags().put(tagName, commitId);
 	}
