@@ -3,6 +3,7 @@ package hu.sebcsaba.gitrelocate;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class CmdLineTool {
 			Process proc = pb.start();
 			proc.waitFor();
 			String errorString = IOUtils.toString(proc.getErrorStream(), "UTF-8");
-			if (proc.exitValue() != 0 || errorString.length()>0) {
+			if (proc.exitValue() != 0) {
 				throw new IOException("Running "+Arrays.asList(params)+" returned "+proc.exitValue()+" and gave error: "+errorString);
 			}
 			return proc.getInputStream();
@@ -54,7 +55,7 @@ public class CmdLineTool {
 	
 	public List<String> getStringList(String... params) throws IOException {
 		String source = getString(params);
-		return Arrays.asList(source.split("\\s+"));
+		return new ArrayList<String>(Arrays.asList(source.split("\\s+")));
 	}
 
 }

@@ -36,7 +36,7 @@ public class GitCmdLineRunner implements GitRunner {
 		if ("HEAD".equals(head)) {
 			head = gitString("rev-parse", "HEAD");
 		}
-		return head;
+		return head.trim();
 	}
 
 	public void createBranch(String branchName) {
