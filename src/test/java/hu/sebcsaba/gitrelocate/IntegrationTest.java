@@ -24,7 +24,7 @@ public class IntegrationTest {
 	}
 
 	@Test
-	public void testRealGitImpl() throws IOException {
+	public void testRealGitImpl() throws IOException, InterruptedException {
 		tool.run("git", "init");
 		doCommit(0);
 		git.createBranch("B0");
@@ -41,7 +41,12 @@ public class IntegrationTest {
 		git.createTag("T0");
 		doCommit(6);
 		git.checkOut("master");
-		doCommit(1); // commit-8
+		
+		// have to sleep to prevent reusing the #1 commit for the next
+		Thread.sleep(1000);
+		// commit-8
+		doCommit(1);
+		
 		tool.run("git", "commit", "--amend", "-m", "commit-8");
 		git.createTag("T2");
 		git.checkOut("B0");
@@ -58,11 +63,10 @@ public class IntegrationTest {
 		FileUtils.deleteDirectory(baseDir);
 	}
 
-	private CommitID doCommit(int i) throws IOException {
+	private void doCommit(int i) throws IOException {
 		FileUtils.write(new File(baseDir, "data.txt"), Integer.toString(i));
 		tool.run("git", "add", "data.txt");
 		tool.run("git", "commit", "-m", "commit-"+i);
-		return git.getCommitId("HEAD");
 	}
 
 }
