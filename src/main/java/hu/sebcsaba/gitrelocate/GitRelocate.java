@@ -32,7 +32,9 @@ public class GitRelocate {
 		
 		while (!commitsToClone.isEmpty()) {
 			Commit commitToClone = commitsToClone.poll();
-			if (hasAllParentsCloned(subTree, commitToClone, cloneMap)) {
+			if (commitToClone.getId().equals(cutPoint)) {
+				// this is in the queue, but not need to clone
+			} else if (hasAllParentsCloned(subTree, commitToClone, cloneMap)) {
 				clone(commitToClone, cloneMap);
 			} else {
 				commitsToClone.add(commitToClone);
