@@ -35,11 +35,15 @@ public class IntegrationTest {
 		git.createBranch("B1");
 		doCommit(3);
 		doCommit(5);
-		doCommit(7); // TODO not merge yet!
+		
 		git.checkOut("B1");
 		doCommit(4);
 		git.createTag("T0");
 		doCommit(6);
+		
+		git.checkOut("B0");
+		doMergeCommit(7, "B1");
+		
 		git.checkOut("master");
 		
 		// have to sleep to prevent reusing the #1 commit for the next
@@ -69,4 +73,12 @@ public class IntegrationTest {
 		tool.run("git", "commit", "-m", "commit-"+i);
 	}
 
+	private void doMergeCommit(int i, String otherBranch) throws IOException {
+		FileUtils.write(new File(baseDir, "data.txt"), Integer.toString(i));
+		tool.run("git", "add", "data.txt");
+		String treeId = tool.getString("git", "write-tree").trim();
+		String commitId = tool.getString("git", "commit-tree", treeId, "-p", git.getActualHeadName(), "-p", otherBranch, "-m", "commit-"+i).trim();
+		tool.run("git", "reset", "--hard", commitId);
+	}
+	
 }

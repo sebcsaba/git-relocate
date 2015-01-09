@@ -33,4 +33,6 @@ public interface GitRunner {
 
 	public CommitID cherryPick(CommitID commitId);
 
+	public CommitID cherryPickMergeCommit(CommitID commitId, List<CommitID> newParentsIds);
+
 }

@@ -127,6 +127,13 @@ public class MockedGitRunner implements GitRunner {
 		return newId;
 	}
 	
+	public CommitID cherryPickMergeCommit(CommitID commitId, List<CommitID> newParentsIds) {
+		CommitID newId = intToCommitID(graph.getCommits().size());
+		Commit c = new Commit(newId, newParentsIds);
+		graph.getCommits().add(c);
+		return newId;
+	}
+	
 	private boolean isDetachedHead() {
 		return !graph.getBranches().containsKey(head);
 	}

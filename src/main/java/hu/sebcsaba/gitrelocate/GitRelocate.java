@@ -1,7 +1,9 @@
 package hu.sebcsaba.gitrelocate;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
@@ -58,14 +60,24 @@ public class GitRelocate {
 	}
 
 	private void clone(Commit commitToClone, Map<CommitID, CommitID> cloneMap) {
+		if (commitToClone.getParents().isEmpty()) {
+			throw new UnsupportedOperationException("Cloning root commit is not implemented yet");
+		}
+		
+		CommitID oldParent1Id = commitToClone.getParents().get(0);
+		CommitID newParent1Id = cloneMap.containsKey(oldParent1Id) ? cloneMap.get(oldParent1Id) : oldParent1Id;
+		git.checkOut(newParent1Id.toString());
+		
 		if (commitToClone.getParents().size()==1) {
-			CommitID oldParentId = commitToClone.getParents().get(0);
-			CommitID newParentId = cloneMap.containsKey(oldParentId) ? cloneMap.get(oldParentId) : oldParentId;
-			git.checkOut(newParentId.toString());
 			CommitID newId = git.cherryPick(commitToClone.getId());
 			cloneMap.put(commitToClone.getId(), newId);
 		} else {
-			throw new UnsupportedOperationException("Cloning merge commit is not implemented yet");
+			List<CommitID> newParentsIds = new ArrayList<CommitID>();
+			for (CommitID oldParentId : commitToClone.getParents()) {
+				newParentsIds.add(cloneMap.containsKey(oldParentId) ? cloneMap.get(oldParentId) : oldParentId);
+			}
+			CommitID newId = git.cherryPickMergeCommit(commitToClone.getId(), newParentsIds);
+			cloneMap.put(commitToClone.getId(), newId);
 		}
 	}
 	
