@@ -1,25 +1,78 @@
 package hu.sebcsaba.gitrelocate;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class App {
 
 	public static void main(String[] args) {
-		if (args.length!=2) {
-			System.out.println("usage: git-relocate <source> <destination>");
-			System.out.println("will clone all descendant commits of source to destination.");
-			System.out.println("will move all descendant branches under source to below destination.");
-			System.out.println("will not touch tags.");
-			System.exit(-1);
+		Parameters params = parseParams(args);
+		if (params.help) {
+			printHelp();
 		}
-		new App().run(args[0], args[1]);
+		new App().run(params);
 	}
 
-	public void run(String source, String destination) {
+	private static Parameters parseParams(String[] args) {
+		Parameters result = new Parameters();
+		List<String> items = new ArrayList<String>();
+		for (int i=0; i<args.length; ++i) {
+			String arg = args[i];
+			if ("--help".equalsIgnoreCase(arg) || "/?".equals(arg)) {
+				result.help = true;
+				return result;
+			}
+			if (arg.startsWith("--branches=")) {
+				result.branch = getPointerMode(arg);
+			} else if (arg.startsWith("--tags=")) {
+				result.tag = getPointerMode(arg);
+			} else {
+				items.add(arg);
+			}
+		}
+		if (items.size()!=2) {
+			throw new IllegalArgumentException("Two commit-ref parameters expected");
+		}
+		result.sourceCommit = items.get(0);
+		result.destinationCommit = items.get(1);
+		return result;
+	}
+
+	private static PointerMode getPointerMode(String arg) {
+		String mode = arg.split("=")[1];
+		return PointerMode.valueOf(mode);
+	}
+
+	public void run(Parameters params) {
 		CmdLineTool tool = new CmdLineTool();
 		GitRunner git = new GitCmdLineRunner(tool);
 		GitRelocate relocator = new GitRelocate(git, new GraphBuilder(git));
-		CommitID cutPoint = git.getCommitId(source);
-		CommitID newBase = git.getCommitId(destination);
+		CommitID cutPoint = git.getCommitId(params.sourceCommit);
+		CommitID newBase = git.getCommitId(params.destinationCommit);
 		relocator.relocate(cutPoint,newBase);
+	}
+	
+	private static enum PointerMode { MOVE, CLONE, SKIP };
+	
+	private static final class Parameters {
+		public boolean help = false;
+		public PointerMode branch = PointerMode.MOVE;
+		public PointerMode tag = PointerMode.MOVE;
+		public String sourceCommit;
+		public String destinationCommit;
+	}
+
+	private static void printHelp() {
+		System.out.println("usage: git-relocate [options] <source> <destination>");
+		System.out.println("will clone all descendant commits of source to destination.");
+		System.out.println("options:");
+		System.out.println("	--branches=[move|clone|skip]    (default: move)");
+		System.out.println("	--tags=[move|clone|skip]        (default: move)");
+		System.out.println("These flags specify how to handle branches/tags under source commit:");
+		System.out.println("	move:  remove the original tags/branches, and create a new in the cloned subtree");
+		System.out.println("	clone: leave the original tags/branches, but create a 'clone-' prefixed copy in the cloned subtree");
+		System.out.println("	skip:  ignore tags/branches");
+		System.exit(-1);
 	}
 
 }
