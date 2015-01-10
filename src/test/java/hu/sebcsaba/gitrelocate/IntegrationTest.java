@@ -56,7 +56,7 @@ public class IntegrationTest {
 		git.checkOut("B0");
 		git.removeBranch("master");
 		
-		GitRelocate relocator = new GitRelocate(git, new GraphBuilder(git));
+		GitRelocate relocator = new GitRelocate(git, new GraphBuilder(git), PointerMode.MOVE, PointerMode.SKIP);
 		CommitID cutPoint = git.getCommitId("T1");
 		CommitID newBase = git.getCommitId("T2");
 		relocator.relocate(cutPoint,newBase);

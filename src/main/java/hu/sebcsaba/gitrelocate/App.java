@@ -23,9 +23,9 @@ public class App {
 				return result;
 			}
 			if (arg.startsWith("--branches=")) {
-				result.branch = getPointerMode(arg);
+				result.branches = getPointerMode(arg);
 			} else if (arg.startsWith("--tags=")) {
-				result.tag = getPointerMode(arg);
+				result.tags = getPointerMode(arg);
 			} else {
 				items.add(arg);
 			}
@@ -46,18 +46,16 @@ public class App {
 	public void run(Parameters params) {
 		CmdLineTool tool = new CmdLineTool();
 		GitRunner git = new GitCmdLineRunner(tool);
-		GitRelocate relocator = new GitRelocate(git, new GraphBuilder(git));
+		GitRelocate relocator = new GitRelocate(git, new GraphBuilder(git), params.branches, params.tags);
 		CommitID cutPoint = git.getCommitId(params.sourceCommit);
 		CommitID newBase = git.getCommitId(params.destinationCommit);
 		relocator.relocate(cutPoint,newBase);
 	}
 	
-	private static enum PointerMode { MOVE, CLONE, SKIP };
-	
 	private static final class Parameters {
 		public boolean help = false;
-		public PointerMode branch = PointerMode.MOVE;
-		public PointerMode tag = PointerMode.MOVE;
+		public PointerMode branches = PointerMode.MOVE;
+		public PointerMode tags = PointerMode.MOVE;
 		public String sourceCommit;
 		public String destinationCommit;
 	}

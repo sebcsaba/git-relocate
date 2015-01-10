@@ -11,10 +11,14 @@ public class GitRelocate {
 	
 	private final GitRunner git;
 	private final GraphBuilder builder;
+	private final PointerMode modeOfBranches;
+	private final PointerMode modeOfTags;
 	
-	public GitRelocate(GitRunner git, GraphBuilder builder) {
+	public GitRelocate(GitRunner git, GraphBuilder builder, PointerMode modeOfBranches, PointerMode modeOfTags) {
 		this.git = git;
 		this.builder = builder;
+		this.modeOfBranches = modeOfBranches;
+		this.modeOfTags = modeOfTags;
 	}
 
 	public void relocate(CommitID cutPoint, CommitID newBase) {
@@ -42,10 +46,33 @@ public class GitRelocate {
 				commitsToClone.add(commitToClone);
 			}
 		}
-		for (String branch : subTree.getBranches().keySet()) {
-			CommitID oldId = subTree.getBranches().get(branch);
+		if (modeOfBranches!=PointerMode.SKIP) {
+			moveOrClonePointers(cloneMap, subTree.getBranches(), modeOfBranches, false);
+		}
+		if (modeOfTags!=PointerMode.SKIP) {
+			moveOrClonePointers(cloneMap, subTree.getTags(), modeOfTags, true);
+		}
+	}
+
+	private void moveOrClonePointers(Map<CommitID, CommitID> cloneMap, Map<String, CommitID> pointers, PointerMode mode, boolean isTag) {
+		for (String pointerName : pointers.keySet()) {
+			CommitID oldId = pointers.get(pointerName);
 			if (cloneMap.containsKey(oldId)) {
-				git.moveBranch(branch, cloneMap.get(oldId));
+				CommitID newId = cloneMap.get(oldId);
+				if (mode==PointerMode.CLONE) {
+					if (isTag) {
+						git.createTag("clone-"+pointerName, newId);
+					} else {
+						git.createBranch("clone-"+pointerName, newId);
+					}
+				} else if (mode==PointerMode.MOVE) {
+					if (isTag) {
+						git.removeTag(pointerName);
+						git.createTag(pointerName, newId);
+					} else {
+						git.moveBranch(pointerName, newId);
+					}
+				}
 			}
 		}
 	}

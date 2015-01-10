@@ -24,7 +24,7 @@ public class GitRelocateTest extends GraphTestData {
 		// given
 		GitRunner git = new MockedGitRunner(GR1_BRANCHES, GR1_TAGS, GR1_PARENTS);
 		GraphBuilder builder = new GraphBuilder(git);
-		GitRelocate relocator = new GitRelocate(git, builder);
+		GitRelocate relocator = new GitRelocate(git, builder, PointerMode.MOVE, PointerMode.SKIP);
 		
 		// when
 		CommitID cutPoint = MockedGitRunner.intToCommitID(1);
