@@ -1,5 +1,6 @@
 package hu.sebcsaba.gitrelocate;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,13 +13,23 @@ import org.apache.commons.io.IOUtils;
 public class CmdLineTool {
 	
 	private final File baseDirectory;
+	private final InputStream inputStream;
 	
 	public CmdLineTool() {
-		this.baseDirectory = null;
+		this(null, null);
 	}
 
 	public CmdLineTool(File baseDirectory) {
+		this(baseDirectory, null);
+	}
+
+	public CmdLineTool(InputStream inputStream) {
+		this(null, inputStream);
+	}
+
+	public CmdLineTool(File baseDirectory, InputStream inputStream) {
 		this.baseDirectory = baseDirectory;
+		this.inputStream = inputStream;
 	}
 
 	private InputStream exec(String... params) throws IOException {
@@ -28,6 +39,10 @@ public class CmdLineTool {
 				pb.directory(baseDirectory);
 			}
 			Process proc = pb.start();
+			if (inputStream != null) {
+				IOUtils.copy(inputStream, proc.getOutputStream());
+				proc.getOutputStream().close();
+			}
 			proc.waitFor();
 			String errorString = IOUtils.toString(proc.getErrorStream(), "UTF-8");
 			if (proc.exitValue() != 0) {
@@ -56,6 +71,11 @@ public class CmdLineTool {
 	public List<String> getStringList(String... params) throws IOException {
 		String source = getString(params);
 		return new ArrayList<String>(Arrays.asList(source.split("\\s+")));
+	}
+
+	public CmdLineTool withInput(String inputString) {
+		InputStream is = new ByteArrayInputStream(inputString.getBytes());
+		return new CmdLineTool(baseDirectory, is);
 	}
 
 }

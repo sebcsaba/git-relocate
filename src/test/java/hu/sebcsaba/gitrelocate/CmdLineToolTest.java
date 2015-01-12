@@ -54,4 +54,12 @@ public class CmdLineToolTest {
 		Assert.assertEquals("/tmp", result);
 	}
 	
+	@Test
+	public void testInputString() throws IOException {
+		CmdLineTool base = new CmdLineTool();
+		CmdLineTool tool = base.withInput("hello world");
+		String result = tool.getString("wc", "-w").trim();
+		Assert.assertEquals("2", result);
+	}
+	
 }
