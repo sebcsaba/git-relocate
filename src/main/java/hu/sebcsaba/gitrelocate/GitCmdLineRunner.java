@@ -1,14 +1,10 @@
 package hu.sebcsaba.gitrelocate;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-
-import org.apache.commons.io.IOUtils;
 
 public class GitCmdLineRunner implements GitRunner {
 	
@@ -86,23 +82,17 @@ public class GitCmdLineRunner implements GitRunner {
 
 	public CommitID cherryPickMergeCommit(CommitID commitId, List<CommitID> newParentsIds) {
 		try {
-			File TMP_MSG_FILE = File.createTempFile("git-relocate", ".tmp");
-			
 			gitExec("cherry-pick", "--no-ff", "--no-commit", "--mainline", "1", commitId.toString());
 			String treeId = gitString("write-tree").trim();
 			String message = gitString("log", "-1", "--pretty=%B", commitId.toString());
-			IOUtils.write(message, new FileOutputStream(TMP_MSG_FILE), "UTF-8");
 
 			List<String> commitParams = new ArrayList<String>();
-			commitParams.addAll(Arrays.asList("commit-tree", treeId, "-F", TMP_MSG_FILE.getAbsolutePath()));
+			commitParams.addAll(Arrays.asList("git", "commit-tree", treeId));
 			for (CommitID newParentId : newParentsIds) {
 				commitParams.add("-p");
 				commitParams.add(newParentId.toString());
 			}
-			String commit = gitString(commitParams.toArray(new String[commitParams.size()])).trim();
-			
-			TMP_MSG_FILE.delete();
-			
+			String commit = cmdLine.withInput(message).getString(commitParams.toArray(new String[commitParams.size()])).trim();
 			return new CommitID(commit);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);

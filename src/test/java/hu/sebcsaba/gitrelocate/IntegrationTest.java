@@ -77,7 +77,7 @@ public class IntegrationTest {
 		FileUtils.write(new File(baseDir, "data.txt"), Integer.toString(i));
 		tool.run("git", "add", "data.txt");
 		String treeId = tool.getString("git", "write-tree").trim();
-		String commitId = tool.getString("git", "commit-tree", treeId, "-p", git.getActualHeadName(), "-p", otherBranch, "-m", "commit-"+i).trim();
+		String commitId = tool.withInput("commit-"+i).getString("git", "commit-tree", treeId, "-p", git.getActualHeadName(), "-p", otherBranch).trim();
 		tool.run("git", "reset", "--hard", commitId);
 	}
 	
