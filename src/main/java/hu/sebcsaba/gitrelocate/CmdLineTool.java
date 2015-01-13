@@ -70,7 +70,9 @@ public class CmdLineTool {
 	
 	public List<String> getStringList(String... params) throws IOException {
 		String source = getString(params);
-		return new ArrayList<String>(Arrays.asList(source.split("\\s+")));
+		ArrayList<String> result = new ArrayList<String>(Arrays.asList(source.split("\\s+")));
+		result.remove("");
+		return result;
 	}
 
 	public CmdLineTool withInput(String inputString) {
