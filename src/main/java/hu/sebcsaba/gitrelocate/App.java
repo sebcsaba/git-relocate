@@ -8,7 +8,7 @@ public class App {
 	public static void main(String[] args) {
 		Parameters params = parseParams(args);
 		if (params.help) {
-			printHelp();
+			printHelp(params.errorMessage);
 		}
 		new App().run(params);
 	}
@@ -31,7 +31,9 @@ public class App {
 			}
 		}
 		if (items.size()!=2) {
-			throw new IllegalArgumentException("Two commit-ref parameters expected");
+			result.errorMessage = "Two commit-ref parameters expected";
+			result.help = true;
+			return result;
 		}
 		result.sourceCommit = items.get(0);
 		result.destinationCommit = items.get(1);
@@ -54,13 +56,18 @@ public class App {
 	
 	private static final class Parameters {
 		public boolean help = false;
+		public String errorMessage = null;
 		public PointerMode branches = PointerMode.MOVE;
 		public PointerMode tags = PointerMode.MOVE;
 		public String sourceCommit;
 		public String destinationCommit;
 	}
 
-	private static void printHelp() {
+	private static void printHelp(String errorMessage) {
+		if (errorMessage!=null) {
+			System.out.println(errorMessage);
+			System.out.println();
+		}
 		System.out.println("usage: git-relocate [options] <source> <destination>");
 		System.out.println("will clone all descendant commits of source to destination.");
 		System.out.println("options:");
