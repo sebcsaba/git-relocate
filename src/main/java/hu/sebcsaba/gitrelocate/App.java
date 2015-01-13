@@ -42,7 +42,7 @@ public class App {
 
 	private static PointerMode getPointerMode(String arg) {
 		String mode = arg.split("=")[1];
-		return PointerMode.valueOf(mode);
+		return PointerMode.valueOf(mode.toUpperCase());
 	}
 
 	public void run(Parameters params) {
