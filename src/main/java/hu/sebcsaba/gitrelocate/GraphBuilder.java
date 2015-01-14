@@ -1,6 +1,6 @@
 package hu.sebcsaba.gitrelocate;
 
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -18,7 +18,7 @@ public class GraphBuilder {
 		GitSubGraph result = new GitSubGraph();
 		fillBranchesMap(result);
 		fillTagsMap(result);
-		Queue<CommitID> queue = getInitialCommitSet(result);
+		Queue<CommitID> queue = new OnlyOnceQueue<CommitID>(getInitialCommitSet(result));
 		while (!queue.isEmpty()) {
 			CommitID id = queue.poll();
 			List<CommitID> parentIDs = git.getCommitParentIds(id);
@@ -40,8 +40,8 @@ public class GraphBuilder {
 		}
 	}
 
-	private Queue<CommitID> getInitialCommitSet(GitSubGraph graph) {
-		Queue<CommitID> result = new LinkedList<CommitID>();
+	private Set<CommitID> getInitialCommitSet(GitSubGraph graph) {
+		Set<CommitID> result = new HashSet<CommitID>();
 		result.addAll(graph.getBranches().values());
 		result.addAll(graph.getTags().values());
 		return result;
@@ -49,7 +49,7 @@ public class GraphBuilder {
 	
 	public GitSubGraph getSubTree(GitSubGraph source, CommitID root) {
 		GitSubGraph result = new GitSubGraph();
-		Queue<CommitID> queue = new LinkedList<CommitID>();
+		Queue<CommitID> queue = new OnlyOnceQueue<CommitID>();
 		queue.add(root);
 		while (!queue.isEmpty()) {
 			CommitID id = queue.poll();
