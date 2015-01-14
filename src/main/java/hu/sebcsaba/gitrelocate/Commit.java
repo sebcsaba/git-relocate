@@ -39,5 +39,10 @@ public class Commit {
 		Commit that = (Commit) obj;
 		return this.id.equals(that.id);
 	}
+
+	@Override
+	public String toString() {
+		return id.toString();
+	}
 	
 }
