@@ -22,10 +22,21 @@ public class GitRelocate {
 	}
 
 	public void relocate(CommitID cutPoint, CommitID newBase) {
+		
+		System.out.print("Building full tree...");
 		GitSubGraph fullTree = builder.buildFullTree();
+		System.out.println("done");
+		
+		System.out.print("Calculating subtree to relocate...");
 		GitSubGraph subTree = builder.getSubTree(fullTree, cutPoint);
+		System.out.println("done");
+		
 		String previousHead = git.getActualHeadName();
+		
+		System.out.print("Relocate...");
 		relocate(subTree, cutPoint, newBase);
+		System.out.println("done");
+		
 		git.checkOut(previousHead);
 	}
 
