@@ -72,7 +72,7 @@ public class GitCmdLineRunner implements GitRunner {
 	}
 
 	public void removeTag(String tagName) {
-		gitExec("tag", "-D", tagName);
+		gitExec("tag", "-d", tagName);
 	}
 
 	public CommitID cherryPick(CommitID commitId) {
