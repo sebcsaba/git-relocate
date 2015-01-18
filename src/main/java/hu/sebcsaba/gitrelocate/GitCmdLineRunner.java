@@ -84,7 +84,7 @@ public class GitCmdLineRunner implements GitRunner {
 		try {
 			gitExec("cherry-pick", "--no-ff", "--no-commit", "--mainline", "1", commitId.toString());
 			String treeId = gitString("write-tree").trim();
-			String message = gitString("log", "-1", "--pretty=%B", commitId.toString());
+			String message = getCommitMessage(commitId);
 
 			List<String> commitParams = new ArrayList<String>();
 			commitParams.addAll(Arrays.asList("git", "commit-tree", treeId));
@@ -97,6 +97,15 @@ public class GitCmdLineRunner implements GitRunner {
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
+	}
+
+	private String getCommitMessage(CommitID commitId) {
+		StringBuilder result = new StringBuilder();
+		String[] list = gitString("show", "--format=full", commitId.toString()).split("\\r?\\n");
+		for (int i=5; i<list.length; ++i) {
+			result.append(list[i]).append("\n");
+		}
+		return result.toString();
 	}
 
 	private void gitExec(String... params) {
