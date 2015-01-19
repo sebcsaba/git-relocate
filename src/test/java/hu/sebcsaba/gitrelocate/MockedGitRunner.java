@@ -134,7 +134,7 @@ public class MockedGitRunner implements GitRunner {
 		return newId;
 	}
 	
-	private boolean isDetachedHead() {
+	public boolean isDetachedHead() {
 		return !graph.getBranches().containsKey(head);
 	}
 

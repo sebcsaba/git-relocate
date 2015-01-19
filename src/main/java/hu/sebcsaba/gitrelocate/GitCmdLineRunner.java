@@ -34,7 +34,7 @@ public class GitCmdLineRunner implements GitRunner {
 	
 	public String getActualHeadName() {
 		String head = gitString("rev-parse", "--abbrev-ref", "HEAD");
-		if ("HEAD".equals(head)) {
+		if ("HEAD".equals(head)) { // detached head
 			head = gitString("rev-parse", "HEAD");
 		}
 		return head.trim();
@@ -106,6 +106,11 @@ public class GitCmdLineRunner implements GitRunner {
 			result.append(list[i]).append("\n");
 		}
 		return result.toString();
+	}
+
+	public boolean isDetachedHead() {
+		String head = gitString("rev-parse", "--abbrev-ref", "HEAD");
+		return "HEAD".equals(head);
 	}
 
 	private void gitExec(String... params) {

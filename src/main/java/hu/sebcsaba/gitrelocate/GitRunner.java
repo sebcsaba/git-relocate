@@ -31,6 +31,8 @@ public interface GitRunner {
 
 	public void removeTag(String tagName);
 
+	public boolean isDetachedHead();
+	
 	public CommitID cherryPick(CommitID commitId);
 
 	public CommitID cherryPickMergeCommit(CommitID commitId, List<CommitID> newParentsIds);
