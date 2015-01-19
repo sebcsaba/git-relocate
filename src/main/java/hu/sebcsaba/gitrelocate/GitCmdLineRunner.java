@@ -27,9 +27,19 @@ public class GitCmdLineRunner implements GitRunner {
 	}
 	
 	public Collection<String> getBranchNames() {
-		List<String> result = gitStringList("branch");
-		result.remove("*");
-		return result;
+		if (isDetachedHead()) {
+			List<String> result = new ArrayList<String>();
+			for (String line : gitStringLines("branch")) {
+				if (!line.startsWith("*")) {
+					result.add(line.trim());
+				}
+			}
+			return result;
+		} else {
+			List<String> result = gitStringList("branch");
+			result.remove("*");
+			return result;
+		}
 	}
 	
 	public String getActualHeadName() {

@@ -2,6 +2,7 @@ package hu.sebcsaba.gitrelocate;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
@@ -36,7 +37,7 @@ public class GitCmdLineRunnerTest {
 	}
 
 	@Test
-	public void testDetachedHead() throws IOException {
+	public void testDetachedHeadBranches() throws IOException {
 		tool.run("git", "init");
 		doCommit(0);
 		git.createBranch("B0");
@@ -46,6 +47,11 @@ public class GitCmdLineRunnerTest {
 		git.checkOut(middleCommit.toString());
 		
 		Assert.assertTrue(git.isDetachedHead());
+		
+		Collection<String> branches = git.getBranchNames();
+		Assert.assertEquals(2, branches.size());
+		Assert.assertTrue(branches.contains("B0"));
+		Assert.assertTrue(branches.contains("master"));
 	}
 
 }
