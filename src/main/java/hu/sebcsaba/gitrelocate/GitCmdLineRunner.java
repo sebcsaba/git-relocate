@@ -60,7 +60,7 @@ public class GitCmdLineRunner implements GitRunner {
 	}
 
 	public void checkOut(String branchName) {
-		gitExec("checkout", branchName);
+		gitExec("checkout", "-f", branchName);
 	}
 
 	public void createTag(String tagName) {
