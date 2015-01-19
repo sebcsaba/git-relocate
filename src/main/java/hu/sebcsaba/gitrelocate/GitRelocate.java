@@ -13,12 +13,14 @@ public class GitRelocate {
 	private final GraphBuilder builder;
 	private final PointerMode modeOfBranches;
 	private final PointerMode modeOfTags;
+	private final boolean verbose;
 	
-	public GitRelocate(GitRunner git, GraphBuilder builder, PointerMode modeOfBranches, PointerMode modeOfTags) {
+	public GitRelocate(GitRunner git, GraphBuilder builder, PointerMode modeOfBranches, PointerMode modeOfTags, boolean verbose) {
 		this.git = git;
 		this.builder = builder;
 		this.modeOfBranches = modeOfBranches;
 		this.modeOfTags = modeOfTags;
+		this.verbose = verbose;
 	}
 
 	public void relocate(CommitID cutPoint, CommitID newBase) {
@@ -33,9 +35,9 @@ public class GitRelocate {
 		
 		String previousHead = git.getActualHeadName();
 		
-		System.out.print("Relocate...");
+		System.out.println("Relocate...");
 		relocate(subTree, cutPoint, newBase);
-		System.out.println("done");
+		System.out.println("Relocate done");
 		
 		git.checkOut(previousHead);
 	}
@@ -107,15 +109,19 @@ public class GitRelocate {
 		git.checkOut(newParent1Id.toString());
 		
 		if (commitToClone.getParents().size()==1) {
+			if (verbose) System.out.print("  clone single ["+commitToClone.getId()+"] to ");
 			CommitID newId = git.cherryPick(commitToClone.getId());
 			cloneMap.put(commitToClone.getId(), newId);
+			if (verbose) System.out.println("["+newId+"]");
 		} else {
+			if (verbose) System.out.print("  clone merge ["+commitToClone.getId()+"] to ");
 			List<CommitID> newParentsIds = new ArrayList<CommitID>();
 			for (CommitID oldParentId : commitToClone.getParents()) {
 				newParentsIds.add(cloneMap.containsKey(oldParentId) ? cloneMap.get(oldParentId) : oldParentId);
 			}
 			CommitID newId = git.cherryPickMergeCommit(commitToClone.getId(), newParentsIds);
 			cloneMap.put(commitToClone.getId(), newId);
+			if (verbose) System.out.println("["+newId+"]");
 		}
 	}
 	

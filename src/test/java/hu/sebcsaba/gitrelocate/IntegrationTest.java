@@ -45,7 +45,7 @@ public class IntegrationTest extends GitCmdLineTestBase {
 		git.checkOut("B0");
 		git.removeBranch("master");
 		
-		GitRelocate relocator = new GitRelocate(git, new GraphBuilder(git), PointerMode.MOVE, PointerMode.SKIP);
+		GitRelocate relocator = new GitRelocate(git, new GraphBuilder(git), PointerMode.MOVE, PointerMode.SKIP, false);
 		CommitID cutPoint = git.getCommitId("T1");
 		CommitID newBase = git.getCommitId("T2");
 		relocator.relocate(cutPoint,newBase);

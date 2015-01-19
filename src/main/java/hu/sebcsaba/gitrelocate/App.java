@@ -22,7 +22,9 @@ public class App {
 				result.help = true;
 				return result;
 			}
-			if (arg.startsWith("--branches=")) {
+			if (arg.equals("--verbose")) {
+				result.verbose = true;
+			} else if (arg.startsWith("--branches=")) {
 				result.branches = getPointerMode(arg);
 			} else if (arg.startsWith("--tags=")) {
 				result.tags = getPointerMode(arg);
@@ -48,7 +50,7 @@ public class App {
 	public void run(Parameters params) {
 		CmdLineTool tool = new CmdLineTool();
 		GitRunner git = new GitCmdLineRunner(tool);
-		GitRelocate relocator = new GitRelocate(git, new GraphBuilder(git), params.branches, params.tags);
+		GitRelocate relocator = new GitRelocate(git, new GraphBuilder(git), params.branches, params.tags, params.verbose);
 		CommitID cutPoint = git.getCommitId(params.sourceCommit);
 		CommitID newBase = git.getCommitId(params.destinationCommit);
 		relocator.relocate(cutPoint,newBase);
@@ -57,6 +59,7 @@ public class App {
 	private static final class Parameters {
 		public boolean help = false;
 		public String errorMessage = null;
+		public boolean verbose = false;
 		public PointerMode branches = PointerMode.MOVE;
 		public PointerMode tags = PointerMode.MOVE;
 		public String sourceCommit;
@@ -71,6 +74,7 @@ public class App {
 		System.out.println("usage: git-relocate [options] <source> <destination>");
 		System.out.println("will clone all descendant commits of source to destination.");
 		System.out.println("options:");
+		System.out.println("	--verbose");
 		System.out.println("	--branches=[move|clone|skip]    (default: move)");
 		System.out.println("	--tags=[move|clone|skip]        (default: move)");
 		System.out.println("These flags specify how to handle branches/tags under source commit:");
