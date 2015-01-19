@@ -4,23 +4,12 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
-public class IntegrationTest {
+public class IntegrationTest extends GitCmdLineTestBase {
 
-	private File baseDir;
-	private CmdLineTool tool;
-	private GitCmdLineRunner git;
-	
-	@Before
-	public void initializeGitFolder() throws IOException {
-		baseDir = new File(FileUtils.getTempDirectory(), "git-relocate-integration-test-data");
-		FileUtils.deleteDirectory(baseDir);
-		baseDir.mkdirs();
-		tool = new CmdLineTool(baseDir);
-		git = new GitCmdLineRunner(tool);
+	protected String getTmpFolderName() {
+		return "git-relocate-integration-test-data";
 	}
 
 	@Test
@@ -62,17 +51,6 @@ public class IntegrationTest {
 		relocator.relocate(cutPoint,newBase);
 	}
 	
-	@After
-	public void destroyGitFolder() throws IOException {
-		FileUtils.deleteDirectory(baseDir);
-	}
-
-	private void doCommit(int i) throws IOException {
-		FileUtils.write(new File(baseDir, "data.txt"), Integer.toString(i));
-		tool.run("git", "add", "data.txt");
-		tool.run("git", "commit", "-m", "commit-"+i);
-	}
-
 	private void doMergeCommit(int i, String otherBranch) throws IOException {
 		FileUtils.write(new File(baseDir, "data.txt"), Integer.toString(i));
 		tool.run("git", "add", "data.txt");
