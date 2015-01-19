@@ -37,5 +37,17 @@ public class GitCmdLineRunnerTest extends GitCmdLineTestBase {
 		CommitID id = git.getCommitId(git.getActualHeadName());
 		Assert.assertEquals("commit-0", git.getCommitMessage(id));
 	}
+	
+	@Test
+	public void testCherryPickEmptyCommit() throws IOException {
+		tool.run("git", "init");
+		doCommit(0);
+		git.createBranch("B0");
+		doCommit(1);
+		tool.run("git", "commit", "--allow-empty", "-m", "commit-2");
+		CommitID emptyCommit = git.getCommitId(git.getActualHeadName());
+		git.checkOut("B0");
+		git.cherryPick(emptyCommit);
+	}
 
 }

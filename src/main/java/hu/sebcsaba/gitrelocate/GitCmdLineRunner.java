@@ -86,7 +86,17 @@ public class GitCmdLineRunner implements GitRunner {
 	}
 
 	public CommitID cherryPick(CommitID commitId) {
-		gitExec("cherry-pick", commitId.toString());
+		if (getModifiedFiles(commitId).isEmpty()) {
+			try {
+				String message = getCommitMessage(commitId);
+				cmdLine.withInput(message).run("git", "commit", "--allow-empty", "-F", "-");
+			}
+			catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+		} else {
+			gitExec("cherry-pick", commitId.toString());
+		}
 		return getCommitId("HEAD");
 	}
 
@@ -116,6 +126,14 @@ public class GitCmdLineRunner implements GitRunner {
 			result.append(list[i].trim()).append("\n");
 		}
 		return result.toString().trim();
+	}
+	
+	private List<String> getModifiedFiles(CommitID commitId) {
+		String diffTree = gitString("diff-tree", "--no-commit-id", "--name-only", "-r", commitId.toString());
+		String[] list = diffTree.split("\\r?\\n");
+		List<String> result = new ArrayList<String>(Arrays.asList(list));
+		result.remove("");
+		return result;
 	}
 
 	public boolean isDetachedHead() {
