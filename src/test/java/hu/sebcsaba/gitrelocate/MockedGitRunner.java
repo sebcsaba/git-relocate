@@ -134,6 +134,10 @@ public class MockedGitRunner implements GitRunner {
 		return newId;
 	}
 	
+	public String getCommitMessage(CommitID commitId) {
+		return "this is a commit "+commitId;
+	}
+	
 	public boolean isDetachedHead() {
 		return !graph.getBranches().containsKey(head);
 	}

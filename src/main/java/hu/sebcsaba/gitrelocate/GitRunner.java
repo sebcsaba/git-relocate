@@ -31,6 +31,8 @@ public interface GitRunner {
 
 	public void removeTag(String tagName);
 
+	public String getCommitMessage(CommitID commitId);
+	
 	public boolean isDetachedHead();
 	
 	public CommitID cherryPick(CommitID commitId);

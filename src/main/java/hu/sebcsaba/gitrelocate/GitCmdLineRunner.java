@@ -109,13 +109,13 @@ public class GitCmdLineRunner implements GitRunner {
 		}
 	}
 
-	private String getCommitMessage(CommitID commitId) {
+	public String getCommitMessage(CommitID commitId) {
 		StringBuilder result = new StringBuilder();
-		String[] list = gitStringLines("show", "--format=full", commitId.toString());
-		for (int i=5; i<list.length; ++i) {
-			result.append(list[i]).append("\n");
+		String[] list = gitStringLines("log", "--format=full", "-n", "1", commitId.toString());
+		for (int i=4; i<list.length; ++i) {
+			result.append(list[i].trim()).append("\n");
 		}
-		return result.toString();
+		return result.toString().trim();
 	}
 
 	public boolean isDetachedHead() {

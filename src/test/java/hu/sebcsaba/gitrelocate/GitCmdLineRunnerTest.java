@@ -29,5 +29,13 @@ public class GitCmdLineRunnerTest extends GitCmdLineTestBase {
 		Assert.assertTrue(branches.contains("B0"));
 		Assert.assertTrue(branches.contains("master"));
 	}
+	
+	@Test
+	public void testGetCommitMessage() throws IOException {
+		tool.run("git", "init");
+		doCommit(0);
+		CommitID id = git.getCommitId(git.getActualHeadName());
+		Assert.assertEquals("commit-0", git.getCommitMessage(id));
+	}
 
 }
