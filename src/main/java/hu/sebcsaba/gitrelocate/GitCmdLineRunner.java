@@ -15,7 +15,7 @@ public class GitCmdLineRunner implements GitRunner {
 	}
 	
 	public CommitID getCommitId(String anyGitCommitRef) {
-		return new CommitID(gitString("rev-parse", anyGitCommitRef).trim());
+		return new CommitID(gitString("rev-parse", anyGitCommitRef));
 	}
 	
 	public List<CommitID> getCommitParentIds(CommitID commitId) {
@@ -83,7 +83,7 @@ public class GitCmdLineRunner implements GitRunner {
 	public CommitID cherryPickMergeCommit(CommitID commitId, List<CommitID> newParentsIds) {
 		try {
 			gitExec("cherry-pick", "--no-ff", "--no-commit", "--mainline", "1", commitId.toString());
-			String treeId = gitString("write-tree").trim();
+			String treeId = gitString("write-tree");
 			String message = getCommitMessage(commitId);
 
 			List<String> commitParams = new ArrayList<String>();
@@ -101,7 +101,7 @@ public class GitCmdLineRunner implements GitRunner {
 
 	private String getCommitMessage(CommitID commitId) {
 		StringBuilder result = new StringBuilder();
-		String[] list = gitString("show", "--format=full", commitId.toString()).split("\\r?\\n");
+		String[] list = gitStringLines("show", "--format=full", commitId.toString());
 		for (int i=5; i<list.length; ++i) {
 			result.append(list[i]).append("\n");
 		}
@@ -119,7 +119,16 @@ public class GitCmdLineRunner implements GitRunner {
 	
 	private String gitString(String... params) {
 		try {
-			return cmdLine.getString(unshift("git", params));
+			return cmdLine.getString(unshift("git", params)).trim();
+		}
+		catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+	
+	private String[] gitStringLines(String... params) {
+		try {
+			return cmdLine.getString(unshift("git", params)).split("\\r?\\n");
 		}
 		catch (IOException ex) {
 			throw new RuntimeException(ex);
