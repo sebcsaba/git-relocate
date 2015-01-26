@@ -71,7 +71,7 @@ public class App {
 			System.out.println(errorMessage);
 			System.out.println();
 		}
-		System.out.println("usage: git-relocate [options] <source> <destination>");
+		System.out.println("usage: git relocate [options] <source> <destination>");
 		System.out.println("will clone all descendant commits of source to destination.");
 		System.out.println("options:");
 		System.out.println("	--verbose");

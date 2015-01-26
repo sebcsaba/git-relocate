@@ -41,7 +41,7 @@
 						</goals>
 					</execution>
 				</executions>
-        </plugin>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -53,6 +53,30 @@
 						</manifest>
 					</archive>
 				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.8</version>
+				<executions>
+					<execution>
+						<phase>install</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<property name="filename" value="${settings.localRepository}/${user.name}/${project.name}/${project.version}/${project.name}-${project.version}-jar-with-dependencies.jar"/>
+								<echo>setting git alias for 'relocate'</echo>
+								<exec executable="git">
+									<arg value="config"/>
+									<arg value="--global"/>
+									<arg value="alias.relocate"/>
+									<arg value="!java -jar ${filename}"/>
+								</exec>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
