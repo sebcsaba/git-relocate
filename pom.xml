@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>sebcsaba</groupId>
 	<artifactId>git-relocate</artifactId>
-	<version>1.1</version>
+	<version>1.2-SNAPSHOT</version>
 	<name>git-relocate</name>
 	<description>Relocate git subtree</description>
 	<properties>
@@ -10,7 +10,7 @@
 	</properties>
 	<scm>
 		<connection>scm:git:git@github.com:sebcsaba/git-relocate.git</connection>
-	  <tag>git-relocate-1.1</tag>
+	  <tag>HEAD</tag>
   </scm>
 	<dependencies>
 		<dependency>
