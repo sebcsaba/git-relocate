@@ -6,8 +6,8 @@ After cloning the repo, just run:
     mvn install
 this will create a git alias in your global git config.
 
-    usage: git relocate [options] <source>:<destination>
-    will clone all descendant commits of source to destination.
+    usage: git relocate [options] <source>:<destination> [<source>:<destination>...]
+    will clone all descendant commits of source(s) to destination(s).
     options:
     	--verbose
     	--branches=[move|clone|skip]    (default: move)

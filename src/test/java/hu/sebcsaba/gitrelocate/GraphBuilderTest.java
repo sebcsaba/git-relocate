@@ -1,5 +1,8 @@
 package hu.sebcsaba.gitrelocate;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -32,7 +35,9 @@ public class GraphBuilderTest extends GraphTestData {
 		GitRunner git = new MockedGitRunner(GR1_BRANCHES, GR1_TAGS, GR1_PARENTS);
 		GraphBuilder builder = new GraphBuilder(git);
 		GitSubGraph source = builder.buildFullTree();
-		GitSubGraph result = builder.getSubTree(source, MockedGitRunner.intToCommitID(2));
+		Set<CommitID> cutPoints = new HashSet<CommitID>();
+		cutPoints.add(MockedGitRunner.intToCommitID(2));
+		GitSubGraph result = builder.getSubTree(source, cutPoints);
 		Assert.assertNotNull(result);
 		Assert.assertEquals(6, result.getCommits().size());
 		Assert.assertEquals(2, result.getBranches().size());

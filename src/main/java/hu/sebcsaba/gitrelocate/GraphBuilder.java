@@ -47,10 +47,10 @@ public class GraphBuilder {
 		return result;
 	}
 	
-	public GitSubGraph getSubTree(GitSubGraph source, CommitID root) {
+	public GitSubGraph getSubTree(GitSubGraph source, Set<CommitID> cutPoints) {
 		GitSubGraph result = new GitSubGraph();
 		Queue<CommitID> queue = new OnlyOnceQueue<CommitID>();
-		queue.add(root);
+		queue.addAll(cutPoints);
 		while (!queue.isEmpty()) {
 			CommitID id = queue.poll();
 			result.getCommits().add(source.getCommit(id));

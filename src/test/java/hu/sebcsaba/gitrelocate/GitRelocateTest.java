@@ -1,5 +1,7 @@
 package hu.sebcsaba.gitrelocate;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -29,7 +31,9 @@ public class GitRelocateTest extends GraphTestData {
 		// when
 		CommitID cutPoint = MockedGitRunner.intToCommitID(1);
 		CommitID newBase = MockedGitRunner.intToCommitID(8);
-		relocator.relocate(cutPoint,newBase);
+		Map<CommitID, CommitID> commitRefs = new HashMap<CommitID, CommitID>();
+		commitRefs.put(cutPoint,newBase);
+		relocator.relocate(commitRefs);
 		
 		// then
 		GitSubGraph result = builder.buildFullTree();

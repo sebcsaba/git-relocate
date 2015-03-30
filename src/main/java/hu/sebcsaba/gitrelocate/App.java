@@ -1,7 +1,9 @@
 package hu.sebcsaba.gitrelocate;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class App {
 
@@ -32,21 +34,20 @@ public class App {
 				items.add(arg);
 			}
 		}
-		if (items.size()!=1) {
-			result.errorMessage = "A pair of commit-ref parameters are expected";
+		if (items.isEmpty()) {
+			result.errorMessage = "At least one pair of commit-ref parameters are expected";
 			result.help = true;
 			return result;
 		}
-		String commitPair = items.get(0);
-		String[] commitPairItems = commitPair.split(":");
-		if (commitPairItems.length != 2) {
-			result.errorMessage = "The parameter '"+commitPair+"' cannot be separated to a pair of commit-refs.";
-			result.help = true;
-			return result;
-			
+		for (String commitPair : items) {
+			String[] commitPairItems = commitPair.split(":");
+			if (commitPairItems.length != 2) {
+				result.errorMessage = "The parameter '"+commitPair+"' cannot be separated to a pair of commit-refs.";
+				result.help = true;
+				return result;
+			}
+			result.commitRefMapping.put(commitPairItems[0], commitPairItems[1]);
 		}
-		result.sourceCommit = commitPairItems[0];
-		result.destinationCommit = commitPairItems[1];
 		return result;
 	}
 
@@ -59,19 +60,27 @@ public class App {
 		CmdLineTool tool = new CmdLineTool();
 		GitRunner git = new GitCmdLineRunner(tool);
 		GitRelocate relocator = new GitRelocate(git, new GraphBuilder(git), params.branches, params.tags, params.verbose);
-		CommitID cutPoint = git.getCommitId(params.sourceCommit);
-		CommitID newBase = git.getCommitId(params.destinationCommit);
-		relocator.relocate(cutPoint,newBase);
+		Map<CommitID, CommitID> commitPairs = getCommitIdMap(git, params.commitRefMapping);
+		relocator.relocate(commitPairs);
 	}
 	
+	private Map<CommitID, CommitID> getCommitIdMap(GitRunner git, Map<String, String> commitRefs) {
+		Map<CommitID, CommitID> result = new HashMap<CommitID, CommitID>();
+		for (Map.Entry<String, String> entry : commitRefs.entrySet()) {
+			CommitID cutPoint = git.getCommitId(entry.getKey());
+			CommitID newBase = git.getCommitId(entry.getValue());
+			result.put(cutPoint, newBase);
+		}
+		return result;
+	}
+
 	private static final class Parameters {
 		public boolean help = false;
 		public String errorMessage = null;
 		public boolean verbose = false;
 		public PointerMode branches = PointerMode.MOVE;
 		public PointerMode tags = PointerMode.MOVE;
-		public String sourceCommit;
-		public String destinationCommit;
+		public Map<String, String> commitRefMapping = new HashMap<String, String>();
 	}
 
 	private static void printHelp(String errorMessage) {
@@ -79,8 +88,8 @@ public class App {
 			System.out.println(errorMessage);
 			System.out.println();
 		}
-		System.out.println("usage: git relocate [options] <source>:<destination>");
-		System.out.println("will clone all descendant commits of source to destination.");
+		System.out.println("usage: git relocate [options] <source>:<destination> [<source>:<destination>...]");
+		System.out.println("will clone all descendant commits of source(s) to destination(s).");
 		System.out.println("options:");
 		System.out.println("	--verbose");
 		System.out.println("	--branches=[move|clone|skip]    (default: move)");

@@ -2,6 +2,8 @@ package hu.sebcsaba.gitrelocate;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
@@ -48,7 +50,9 @@ public class IntegrationTest extends GitCmdLineTestBase {
 		GitRelocate relocator = new GitRelocate(git, new GraphBuilder(git), PointerMode.MOVE, PointerMode.SKIP, false);
 		CommitID cutPoint = git.getCommitId("T1");
 		CommitID newBase = git.getCommitId("T2");
-		relocator.relocate(cutPoint,newBase);
+		Map<CommitID, CommitID> commitRefs = new HashMap<CommitID, CommitID>();
+		commitRefs.put(cutPoint,newBase);
+		relocator.relocate(commitRefs);
 	}
 	
 	private void doMergeCommit(int i, String otherBranch) throws IOException {

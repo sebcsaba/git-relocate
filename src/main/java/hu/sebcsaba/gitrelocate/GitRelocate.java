@@ -23,35 +23,34 @@ public class GitRelocate {
 		this.verbose = verbose;
 	}
 
-	public void relocate(CommitID cutPoint, CommitID newBase) {
+	public void relocate(Map<CommitID, CommitID> commitRefs) {
 		
 		System.out.print("Building full tree...");
 		GitSubGraph fullTree = builder.buildFullTree();
 		System.out.println("done");
 		
 		System.out.print("Calculating subtree to relocate...");
-		GitSubGraph subTree = builder.getSubTree(fullTree, cutPoint);
+		GitSubGraph subTree = builder.getSubTree(fullTree, commitRefs.keySet());
 		System.out.println("done");
 		
 		String previousHead = git.getActualHeadName();
 		
 		System.out.println("Relocate...");
-		relocate(subTree, cutPoint, newBase);
+		relocate(subTree, commitRefs);
 		System.out.println("Relocate done");
 		
 		git.checkOut(previousHead);
 	}
 
-	private void relocate(GitSubGraph subTree, CommitID cutPoint, CommitID newBase) {
+	private void relocate(GitSubGraph subTree, Map<CommitID, CommitID> commitRefs) {
 		Queue<Commit> commitsToClone = new LinkedList<Commit>();
 		commitsToClone.addAll(subTree.getCommits());
 		
-		Map<CommitID, CommitID> cloneMap = new HashMap<CommitID, CommitID>();
-		cloneMap.put(cutPoint, newBase);
+		Map<CommitID, CommitID> cloneMap = new HashMap<CommitID, CommitID>(commitRefs);
 		
 		while (!commitsToClone.isEmpty()) {
 			Commit commitToClone = commitsToClone.poll();
-			if (commitToClone.getId().equals(cutPoint)) {
+			if (commitRefs.containsKey(commitToClone.getId())) {
 				// this is in the queue, but not need to clone
 			} else if (hasAllParentsCloned(subTree, commitToClone, cloneMap)) {
 				clone(commitToClone, cloneMap);
