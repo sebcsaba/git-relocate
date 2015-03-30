@@ -5,6 +5,9 @@
 	<version>1.1-SNAPSHOT</version>
 	<name>git-relocate</name>
 	<description>Relocate git subtree</description>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 	<scm>
 		<connection>scm:git:git@github.com:sebcsaba/git-relocate.git</connection>
 	</scm>
