@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>sebcsaba</groupId>
 	<artifactId>git-relocate</artifactId>
-	<version>1.1-SNAPSHOT</version>
+	<version>1.1</version>
 	<name>git-relocate</name>
 	<description>Relocate git subtree</description>
 	<properties>
@@ -10,7 +10,8 @@
 	</properties>
 	<scm>
 		<connection>scm:git:git@github.com:sebcsaba/git-relocate.git</connection>
-	</scm>
+	  <tag>git-relocate-1.1</tag>
+  </scm>
 	<dependencies>
 		<dependency>
 			<groupId>commons-io</groupId>
@@ -63,13 +64,13 @@
 						</goals>
 						<configuration>
 							<target>
-								<property name="filename" value="${settings.localRepository}/${user.name}/${project.name}/${project.version}/${project.name}-${project.version}-jar-with-dependencies.jar"/>
+								<property name="filename" value="${settings.localRepository}/${user.name}/${project.name}/${project.version}/${project.name}-${project.version}-jar-with-dependencies.jar" />
 								<echo>setting git alias for 'relocate'</echo>
 								<exec executable="git">
-									<arg value="config"/>
-									<arg value="--global"/>
-									<arg value="alias.relocate"/>
-									<arg value="!java -jar ${filename}"/>
+									<arg value="config" />
+									<arg value="--global" />
+									<arg value="alias.relocate" />
+									<arg value="!java -jar ${filename}" />
 								</exec>
 							</target>
 						</configuration>
