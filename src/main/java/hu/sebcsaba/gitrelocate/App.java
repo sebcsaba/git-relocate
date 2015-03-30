@@ -32,13 +32,21 @@ public class App {
 				items.add(arg);
 			}
 		}
-		if (items.size()!=2) {
-			result.errorMessage = "Two commit-ref parameters expected";
+		if (items.size()!=1) {
+			result.errorMessage = "A pair of commit-ref parameters are expected";
 			result.help = true;
 			return result;
 		}
-		result.sourceCommit = items.get(0);
-		result.destinationCommit = items.get(1);
+		String commitPair = items.get(0);
+		String[] commitPairItems = commitPair.split(":");
+		if (commitPairItems.length != 2) {
+			result.errorMessage = "The parameter '"+commitPair+"' cannot be separated to a pair of commit-refs.";
+			result.help = true;
+			return result;
+			
+		}
+		result.sourceCommit = commitPairItems[0];
+		result.destinationCommit = commitPairItems[1];
 		return result;
 	}
 
@@ -71,7 +79,7 @@ public class App {
 			System.out.println(errorMessage);
 			System.out.println();
 		}
-		System.out.println("usage: git relocate [options] <source> <destination>");
+		System.out.println("usage: git relocate [options] <source>:<destination>");
 		System.out.println("will clone all descendant commits of source to destination.");
 		System.out.println("options:");
 		System.out.println("	--verbose");
